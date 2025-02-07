@@ -17,7 +17,7 @@ public class Main {
         } catch (Exception e) {
             throw new IOException("while reading \"%s\"".formatted(jarPath), e);
         }
-        var scc = graph.concentrate(Tarjan.stronglyConnectedComponents(graph));
+        var scc = TransReductionCondensation.of(graph);
         try (var writer = new PrintWriter(System.out)) {
             Dot.write(writer, scc);
         } catch (Exception e) {

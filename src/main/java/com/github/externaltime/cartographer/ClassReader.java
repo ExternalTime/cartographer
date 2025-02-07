@@ -6,10 +6,41 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.JarFile;
 
 public final class ClassReader {
     private static final int MAGIC = 0xCAFEBABE;
+    private static final Predicate<String> FILTER;
+
+    static {
+        var filters = Set.of(
+                "java/lang/Object",
+                "java/lang/String",
+                "java/lang/StringBuilder",
+                "java/lang/Enum",
+                "B",
+                "java/lang/Byte",
+                "C",
+                "java/lang/Character",
+                "D",
+                "java/lang/Double",
+                "F",
+                "java/lang/Float",
+                "I",
+                "java/lang/Integer",
+                "J",
+                "java/lang/Long",
+                "S",
+                "java/lang/Short",
+                "Z",
+                "java/lang/Boolean",
+                "java/lang/Number",
+                "java/lang/Void"
+        );
+        FILTER = str -> !(str.startsWith("java/util/") || str.startsWith("java/math/") || str.endsWith("Exception") || filters.contains(str));
+    }
 
     private final Graph<String> graph;
 
@@ -19,10 +50,16 @@ public final class ClassReader {
 
     private static String normalizeType(String field) {
         while (true) {
+            int tmp;
+            // Array
             if (field.startsWith("["))
                 field = field.substring(1);
+            // Pointer
             else if (field.startsWith("L") && field.endsWith(";"))
                 field = field.substring(1, field.length() - 1);
+            // Nested classes
+            else if ((tmp = field.lastIndexOf('$')) != -1)
+                field = field.substring(0, tmp);
             else break;
         }
         return field;
@@ -53,13 +90,16 @@ public final class ClassReader {
         }
         if (in.readUnsignedShort() == 0x8000)
             return;
-        var thisClass = Objects.requireNonNull(strings.get(classIds.get(in.readUnsignedShort())));
+        var thisClass = normalizeType(Objects.requireNonNull(strings.get(classIds.get(in.readUnsignedShort()))));
+        if (!FILTER.test(thisClass))
+            return;
         var otherClasses = classIds
                 .values()
                 .stream()
                 .map(strings::get)
                 .map(Objects::requireNonNull)
-                .map(ClassReader::normalizeType);
+                .map(ClassReader::normalizeType)
+                .filter(FILTER);
         graph.addEdges(thisClass, otherClasses);
     }
 
