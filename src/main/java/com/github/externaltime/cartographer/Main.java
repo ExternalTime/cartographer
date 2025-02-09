@@ -6,22 +6,23 @@ import java.util.jar.JarFile;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            System.err.println("usage: java cartographer [path to jar]");
+        if (args.length < 1) {
+            System.err.println("usage: java cartographer [one or more jar files]");
             return;
         }
-        var jarPath = args[0];
         var graph = new Graph<String>();
-        try (JarFile jar = new JarFile(jarPath)) {
-            new ClassReader(graph).addArchive(jar);
-        } catch (Exception e) {
-            throw new IOException("while reading \"%s\"".formatted(jarPath), e);
+        for (var path : args) {
+            try (JarFile jar = new JarFile(path)) {
+                new ClassReader(graph).addArchive(jar);
+            } catch (Exception e) {
+                throw new IOException("while reading \"%s\"".formatted(path), e);
+            }
         }
         var scc = TransReductionCondensation.of(graph);
         try (var writer = new PrintWriter(System.out)) {
             Dot.write(writer, scc);
         } catch (Exception e) {
-            throw new IOException("while writing to \"%s\"".formatted(jarPath), e);
+            throw new IOException("while while printing graph description", e);
         }
     }
 }
