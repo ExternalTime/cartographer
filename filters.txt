@@ -1,0 +1,40 @@
+# JVM primitives
+B
+C
+D
+F
+I
+J
+S
+Z
+
+# Boxed primitives
+java/lang/Boolean
+java/lang/Character
+java/lang/Byte
+java/lang/Short
+java/lang/Integer
+java/lang/Long
+java/lang/Float
+java/lang/Double
+
+# Other common (mostly) pure parts of std
+java/lang/Object
+java/lang/Void
+java/lang/Enum
+java/lang/Throwable
+java/.*(Exception|Error)
+java/lang/Number
+java/lang/Math
+java/lang/String
+java/lang/StringBuilder
+java/util/function/.*
+java/util/stream/.*
+java/util/[^/]+
+
+# Some java syntax sugar over lambdas
+java/lang/invoke/StringConcatFactory
+java/lang/invoke/LambdaMetafactory
+java/lang/invoke/MethodHandles
+
+# Whatever you want. Can filter out all of std and libraries if you think it will help.

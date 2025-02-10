@@ -12,39 +12,12 @@ import java.util.jar.JarFile;
 
 public final class ClassReader {
     private static final int MAGIC = 0xCAFEBABE;
-    private static final Predicate<String> FILTER;
 
-    static {
-        var filters = Set.of(
-                "java/lang/Object",
-                "java/lang/String",
-                "java/lang/StringBuilder",
-                "java/lang/Enum",
-                "B",
-                "java/lang/Byte",
-                "C",
-                "java/lang/Character",
-                "D",
-                "java/lang/Double",
-                "F",
-                "java/lang/Float",
-                "I",
-                "java/lang/Integer",
-                "J",
-                "java/lang/Long",
-                "S",
-                "java/lang/Short",
-                "Z",
-                "java/lang/Boolean",
-                "java/lang/Number",
-                "java/lang/Void"
-        );
-        FILTER = str -> !(str.startsWith("java/util/") || str.startsWith("java/math/") || str.endsWith("Exception") || filters.contains(str));
-    }
-
+    private final Predicate<String> filter;
     private final Graph<String> graph;
 
-    public ClassReader(Graph<String> graph) {
+    public ClassReader(Predicate<String> filter, Graph<String> graph) {
+        this.filter = filter;
         this.graph = graph;
     }
 
@@ -91,7 +64,7 @@ public final class ClassReader {
         if (in.readUnsignedShort() == 0x8000)
             return;
         var thisClass = normalizeType(Objects.requireNonNull(strings.get(classIds.get(in.readUnsignedShort()))));
-        if (!FILTER.test(thisClass))
+        if (!filter.test(thisClass))
             return;
         var otherClasses = classIds
                 .values()
@@ -99,7 +72,7 @@ public final class ClassReader {
                 .map(strings::get)
                 .map(Objects::requireNonNull)
                 .map(ClassReader::normalizeType)
-                .filter(FILTER);
+                .filter(filter);
         graph.addEdges(thisClass, otherClasses);
     }
 
