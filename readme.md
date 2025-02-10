@@ -38,7 +38,7 @@ connection from and to clusters.
 
 As you can probably see the results are kinda bad. Could try to make some small
 improvements by expermineting with grouping stuff into more clusters or by
-filtering out anything that gets defined be dependencies, but that won't really
+filtering out anything that gets defined by dependencies, but that won't really
 solve the core issue here.
 
 The layout egnines in graphviz are simply not enough. Ideally we'd use something
@@ -51,4 +51,5 @@ that'd require *a lot* more work on my part than I anticipated or am willing to
 spend time on right now.
 
 Ultimately I'll leave this project as is. Might make some small tweaks to it if
-I feel like it, but I don't expect it to ever actually become significant help.
+I feel like it, but I don't expect it to ever actually become significant help
+in familiarizing yourself with a codebase.
