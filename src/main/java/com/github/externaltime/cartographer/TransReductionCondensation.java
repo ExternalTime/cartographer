@@ -13,6 +13,8 @@ public class TransReductionCondensation<T> {
         this.graph = graph;
     }
 
+    // Precondition: components are added in topological order from leaves to root
+    // Postcondition: `res` is a transitive reduction
     private void addComponent(Graph<T> component) {
         var candidates = component
                 .vertices()
@@ -34,6 +36,8 @@ public class TransReductionCondensation<T> {
         }
     }
 
+    // Everything below is just Tarjan's algorithm for finding strongly
+    // connected components but slightly tweaked for readability.
     private static class NodeInfo {
         final int index;
         int lowlink;

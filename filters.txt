@@ -23,6 +23,7 @@ java/lang/Object
 java/lang/Void
 java/lang/Enum
 java/lang/Throwable
+java/lang/annotation/Annotation
 java/.*(Exception|Error)
 java/lang/Number
 java/lang/Math

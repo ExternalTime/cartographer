@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.JarFile;
 
@@ -21,6 +20,8 @@ public final class ClassReader {
         this.graph = graph;
     }
 
+    // We don't care whether a type is an element of an array.
+    // We also merge nested classes for readability.
     private static String normalizeType(String field) {
         while (true) {
             int tmp;
@@ -54,6 +55,7 @@ public final class ClassReader {
                 case 8, 16, 19, 20 -> in.readNBytes(2);
                 case 15 -> in.readNBytes(3);
                 case 3, 4, 9, 10, 11, 12, 13, 14, 17, 18 -> in.readNBytes(4);
+                // Both `Long` and `Double` take up 2 spaces in constant pool.
                 case 5, 6 -> {
                     i += 1;
                     in.readNBytes(8);
